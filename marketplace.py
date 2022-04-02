@@ -194,8 +194,8 @@ class TestMarketplace(unittest.TestCase):
         self.marketplace.add_to_cart(1, self.product1)
         self.marketplace.add_to_cart(1, self.product2)
         self.assertEqual(self.marketplace.market_products.dict, {})
-        # cart = {self.product1: {0: 1, 1: 1}, self.product2: {1: 1}}
-        # self.assertEqual(self.marketplace.get_cart(0).dict, cart)
+        cart = {self.product1: {1: 1, 2: 1}, self.product2: {2: 1}}
+        self.assertEqual(self.marketplace.get_cart(1).dict, cart)
 
     def test_remove_from_cart(self):
         pass
