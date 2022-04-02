@@ -5,9 +5,8 @@ Computer Systems Architecture Course
 Assignment 1
 March 2021
 """
-import time
 from threading import Thread
-from time import sleep
+import time
 
 
 class Consumer(Thread):
@@ -36,8 +35,7 @@ class Consumer(Thread):
         self.carts = carts
         self.marketplace = marketplace
         self.retry_wait_time = retry_wait_time
-
-        pass
+        self.name = kwargs['name']
 
     def run(self):
         for cart in self.carts:
@@ -52,6 +50,4 @@ class Consumer(Thread):
                     else:
                         self.marketplace.remove_from_cart(cart_id, cart_ops['product'])
 
-            self.marketplace.place_order(cart_id)
-
-        pass
+            product_list = self.marketplace.place_order(cart_id)
