@@ -31,5 +31,5 @@ class Coffee(Product):
     """
     Coffee products
     """
-    acidity: str
+    acidity: float
     roast_level: str

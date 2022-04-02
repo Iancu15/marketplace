@@ -5,8 +5,13 @@ Computer Systems Architecture Course
 Assignment 1
 March 2021
 """
+import unittest
 from threading import Lock
-from tema.product_dict import ProductDict
+from product_dict import ProductDict
+from consumer import Consumer
+from producer import Producer
+from product import Tea
+from product import Coffee
 
 
 class Marketplace:
@@ -22,9 +27,9 @@ class Marketplace:
         :param queue_size_per_producer: the maximum size of a queue associated with each producer
         """
         self.queue_size_per_producer = queue_size_per_producer
-        self.next_producer_id = 0
+        self.next_producer_id = 1
         self.next_producer_id_lock = Lock()
-        self.next_cart_id = 0
+        self.next_cart_id = 1
         self.next_cart_id_lock = Lock()
         self.market_products = ProductDict()
         self.producer_queue_sizes = {}
@@ -142,3 +147,58 @@ class Marketplace:
                     self.producer_queue_sizes[producer_id] -= quantity
 
         return product_list
+
+
+class TestMarketplace(unittest.TestCase):
+    def setUp(self) -> None:
+        self.marketplace = Marketplace(3)
+        self.product1 = Tea("Linden", 9, "Linden")
+        self.product2 = Coffee("Indonezia", 1, 5.05, 'MEDIUM')
+
+    def test_register_producer(self):
+        for i in range(1, 100):
+            self.assertEqual(self.marketplace.register_producer(), i)
+
+    def test_publish(self):
+        self.marketplace.register_producer()
+        self.assertEqual(self.marketplace.publish(1, self.product1), True)
+        self.assertEqual(self.marketplace.publish(1, self.product1), True)
+        self.assertEqual(self.marketplace.publish(1, self.product2), True)
+        self.assertEqual(self.marketplace.producer_queue_sizes[1], 3)
+        self.assertEqual(self.marketplace.publish(1, self.product2), False)
+        market_products = {self.product1: {1: 2}, self.product2: {1: 1}}
+        self.assertEqual(self.marketplace.market_products.dict, market_products)
+
+        self.marketplace.register_producer()
+        for i in range(0, 10):
+            self.marketplace.publish(2, self.product2)
+        market_products[self.product2][2] = 3
+        self.assertEqual(self.marketplace.market_products.dict, market_products)
+
+    def test_new_cart(self):
+        for i in range(1, 100):
+            self.assertEqual(self.marketplace.new_cart(), i)
+
+    def test_get_cart(self):
+        pass
+
+    def test_add_to_cart(self):
+        self.marketplace.register_producer()
+        self.marketplace.register_producer()
+        self.marketplace.publish(1, self.product1)
+        self.marketplace.publish(2, self.product1)
+        self.marketplace.publish(2, self.product2)
+
+        self.marketplace.new_cart()
+        self.marketplace.add_to_cart(1, self.product1)
+        self.marketplace.add_to_cart(1, self.product1)
+        self.marketplace.add_to_cart(1, self.product2)
+        self.assertEqual(self.marketplace.market_products.dict, {})
+        # cart = {self.product1: {0: 1, 1: 1}, self.product2: {1: 1}}
+        # self.assertEqual(self.marketplace.get_cart(0).dict, cart)
+
+    def test_remove_from_cart(self):
+        pass
+
+    def test_place_order(self):
+        pass

@@ -51,3 +51,5 @@ class Consumer(Thread):
                         self.marketplace.remove_from_cart(cart_id, cart_ops['product'])
 
             product_list = self.marketplace.place_order(cart_id)
+            for product in product_list:
+                print(self.name, "bought", product)
