@@ -38,15 +38,16 @@ class Consumer(Thread):
         self.name = kwargs['name']
 
     def run(self):
+        market = self.marketplace
         for cart in self.carts:
             cart_id = self.marketplace.new_cart()
             for cart_ops in cart:
-                for i in range(0, cart_ops['quantity']):
+                for _ in range(0, cart_ops['quantity']):
                     if cart_ops['type'] == 'add':
-                        is_product_in_market = self.marketplace.add_to_cart(cart_id, cart_ops['product'])
+                        is_product_in_market = market.add_to_cart(cart_id, cart_ops['product'])
                         while not is_product_in_market:
                             time.sleep(self.retry_wait_time)
-                            is_product_in_market = self.marketplace.add_to_cart(cart_id, cart_ops['product'])
+                            is_product_in_market = market.add_to_cart(cart_id, cart_ops['product'])
                     else:
                         self.marketplace.remove_from_cart(cart_id, cart_ops['product'])
 
